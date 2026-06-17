@@ -17,6 +17,7 @@ export default class GameScene extends Phaser.Scene {
     const { width, height } = this.scale;
 
     this.levelId = data && data.levelId ? data.levelId : this.levelId;
+    const startImmediately = Boolean(data && data.startImmediately);
 
     // 1. 关卡配置
     // 第 10-11 步开始，关卡内容从 level1.js / level2.js 读取。
@@ -225,6 +226,14 @@ export default class GameScene extends Phaser.Scene {
     this.input.keyboard.once('keydown', () => this.audio.unlock());
 
     this.showTitle();
+
+    if (startImmediately) {
+      this.time.delayedCall(180, () => {
+        if (this.gameState === 'title') {
+          this.startPlaying();
+        }
+      });
+    }
   }
 
   createTemporaryTextures() {
@@ -416,8 +425,8 @@ export default class GameScene extends Phaser.Scene {
     this.overlayText.setText(`Phaser 3 横板过关\n${this.levelConfig.name}\n\n按 Enter / Space / 点击屏幕开始\n← → 或 A D 移动　↑ W Space 跳跃`);
     this.overlayText.setVisible(true);
 
-    this.input.keyboard.once('keydown-ENTER', () => this.startPlaying());
-    this.input.keyboard.once('keydown-SPACE', () => this.startPlaying());
+    this.input.keyboard.on('keydown-ENTER', this.startPlaying, this);
+    this.input.keyboard.on('keydown-SPACE', this.startPlaying, this);
     this.input.once('pointerdown', () => {
       this.audio.unlock();
       this.startPlaying();
@@ -426,6 +435,10 @@ export default class GameScene extends Phaser.Scene {
 
   startPlaying() {
     if (this.gameState !== 'title') return;
+
+    if (this.audio && typeof this.audio.unlock === 'function') {
+      this.audio.unlock();
+    }
 
     this.gameState = 'playing';
     this.isLevelClear = false;
