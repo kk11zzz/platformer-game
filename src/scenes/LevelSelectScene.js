@@ -29,13 +29,13 @@ export default class LevelSelectScene extends Phaser.Scene {
       color: '#d1d5db'
     }).setOrigin(0.5);
 
-    this.add.text(width / 2, 160, '点击关卡后直接进入游戏，无需二次开始', {
+    this.add.text(width / 2, 160, '点击任意位置选择第 1 关并立即开始', {
       fontFamily: 'Arial',
       fontSize: '16px',
       color: '#9ca3af'
     }).setOrigin(0.5);
 
-    this.selectedText = this.add.text(width / 2, 188, '键盘按 1 / 2 选择关卡，按 Enter / Space 开始', {
+    this.selectedText = this.add.text(width / 2, 188, '当前选择：第 1 关　按 Enter / Space 开始', {
       fontFamily: 'Arial',
       fontSize: '16px',
       color: '#facc15'
@@ -73,7 +73,22 @@ export default class LevelSelectScene extends Phaser.Scene {
     this.keyEnter = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER);
     this.keySpace = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-    this.add.text(width / 2, height - 60, '提示：点击关卡后直接开始 | 游戏中按 R 重新开始当前关卡', {
+    this.input.keyboard.on('keydown-ONE', () => this.selectLevel(0));
+    this.input.keyboard.on('keydown-TWO', () => this.selectLevel(1));
+    this.input.keyboard.on('keydown-ENTER', () => this.startLevel(this.selectedLevelIndex));
+    this.input.keyboard.on('keydown-SPACE', () => this.startLevel(this.selectedLevelIndex));
+
+    this.input.on('pointerdown', (pointer) => {
+      const clickedButton = this.buttons.find((item) => item.button.getBounds().contains(pointer.x, pointer.y));
+      if (clickedButton) {
+        const index = this.buttons.indexOf(clickedButton);
+        this.startLevel(index);
+      } else {
+        this.startLevel(this.selectedLevelIndex);
+      }
+    });
+
+    this.add.text(width / 2, height - 60, '提示：点击任意位置直接开始 | 游戏中按 R 重新开始当前关卡', {
       fontFamily: 'Arial',
       fontSize: '18px',
       color: '#9ca3af'

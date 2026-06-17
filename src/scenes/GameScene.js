@@ -222,7 +222,6 @@ export default class GameScene extends Phaser.Scene {
     this.keyR = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.R);
 
     // 24. 首次用户输入后启用音效，绕过浏览器自动播放限制。
-    this.input.once('pointerdown', () => this.audio.unlock());
     this.input.keyboard.once('keydown', () => this.audio.unlock());
 
     this.showTitle();
@@ -427,7 +426,7 @@ export default class GameScene extends Phaser.Scene {
 
     this.input.keyboard.on('keydown-ENTER', this.startPlaying, this);
     this.input.keyboard.on('keydown-SPACE', this.startPlaying, this);
-    this.input.once('pointerdown', () => {
+    this.input.on('pointerdown', () => {
       this.audio.unlock();
       this.startPlaying();
     });
